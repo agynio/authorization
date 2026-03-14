@@ -1,0 +1,13 @@
+1. Get the release namespace:
+
+  {{- if .Release.Namespace }}
+  $ kubectl get pods -n {{ .Release.Namespace }}
+  {{- else }}
+  $ kubectl get pods
+  {{- end }}
+
+2. To connect to the gRPC service locally:
+
+   $ kubectl port-forward svc/{{ include "authorization.fullname" . }} 50051:{{ .Values.service.port }}
+
+   Then connect your client to localhost:50051.
