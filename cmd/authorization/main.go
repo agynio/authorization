@@ -34,9 +34,7 @@ func run() error {
 	}
 
 	fgaClient, err := openfgaclient.NewSdkClient(&openfgaclient.ClientConfiguration{
-		ApiUrl:               cfg.OpenFGAAPIURL,
-		StoreId:              cfg.OpenFGAStoreID,
-		AuthorizationModelId: cfg.OpenFGAModelID,
+		ApiUrl: cfg.OpenFGAAPIURL,
 	})
 	if err != nil {
 		return fmt.Errorf("create OpenFGA client: %w", err)

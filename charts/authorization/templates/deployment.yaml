@@ -57,7 +57,7 @@ spec:
             - name: OPENFGA_STORE_ID
               value: {{ required "openfga.storeId must be set" .Values.openfga.storeId | quote }}
             - name: OPENFGA_MODEL_ID
-              value: {{ required "openfga.modelId must be set" .Values.openfga.modelId | quote }}
+              value: {{ .Values.openfga.modelId | quote }}
           livenessProbe:
             tcpSocket:
               port: grpc

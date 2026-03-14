@@ -1,6 +1,6 @@
 module github.com/agynio/authorization
 
-go 1.25.7
+go 1.24.0
 
 require (
 	github.com/openfga/go-sdk v0.7.5
