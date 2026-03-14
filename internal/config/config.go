@@ -32,6 +32,9 @@ func FromEnv() (Config, error) {
 	}
 
 	cfg.OpenFGAModelID = strings.TrimSpace(os.Getenv("OPENFGA_MODEL_ID"))
+	if cfg.OpenFGAModelID == "" {
+		return Config{}, fmt.Errorf("OPENFGA_MODEL_ID must be set")
+	}
 
 	return cfg, nil
 }

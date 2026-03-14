@@ -278,9 +278,6 @@ func (s *Server) storeIDPointer() *string {
 }
 
 func (s *Server) modelIDPointer() *string {
-	if strings.TrimSpace(s.modelID) == "" {
-		return nil
-	}
 	return openfga.ToPtr(s.modelID)
 }
 
