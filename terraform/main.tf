@@ -7,10 +7,10 @@ resource "openfga_store" "this" {
 }
 
 data "openfga_authorization_model_document" "this" {
-  file = "${path.module}/model.fga"
+  dsl = file("${path.module}/model.fga")
 }
 
 resource "openfga_authorization_model" "this" {
-  store_id = openfga_store.this.id
-  model    = data.openfga_authorization_model_document.this.json
+  store_id   = openfga_store.this.id
+  model_json = data.openfga_authorization_model_document.this.result
 }
