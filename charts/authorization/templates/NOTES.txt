@@ -8,6 +8,6 @@
 
 2. To connect to the gRPC service locally:
 
-   $ kubectl port-forward svc/{{ include "authorization.fullname" . }} 50051:{{ .Values.service.port }}
+   $ kubectl port-forward svc/{{ include "service-base.fullname" . }} 50051:{{ (index .Values.service.ports 0).port }}
 
    Then connect your client to localhost:50051.

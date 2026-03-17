@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	authorizationv1 "github.com/agynio/authorization/gen/go/agynio/api/authorization/v1"
+	authorizationv1 "github.com/agynio/authorization/.gen/go/agynio/api/authorization/v1"
 	openfga "github.com/openfga/go-sdk"
 	openfgaclient "github.com/openfga/go-sdk/client"
 	"google.golang.org/grpc/codes"
