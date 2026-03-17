@@ -39,4 +39,8 @@ WORKDIR /app
 
 COPY --from=build /out/authorization /app/authorization
 
+RUN addgroup -S app && adduser -S app -G app
+
+USER app
+
 ENTRYPOINT ["/app/authorization"]
