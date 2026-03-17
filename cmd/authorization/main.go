@@ -10,7 +10,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	authorizationv1 "github.com/agynio/authorization/gen/go/agynio/api/authorization/v1"
+	authorizationv1 "github.com/agynio/authorization/.gen/go/agynio/api/authorization/v1"
 	"google.golang.org/grpc"
 
 	"github.com/agynio/authorization/internal/config"
