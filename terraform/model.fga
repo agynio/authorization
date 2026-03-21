@@ -3,7 +3,7 @@ model
 
 type identity
 
-type tenant
+type organization
   relations
     define owner: [identity]
     define member: [identity] or owner
