@@ -16,7 +16,7 @@ func TestTupleKeyFromProto(t *testing.T) {
 	key := &authorizationv1.TupleKey{
 		User:     "identity:user_1",
 		Relation: "member",
-		Object:   "tenant:tenant_1",
+		Object:   "organization:org_1",
 	}
 
 	got, err := tupleKeyFromProto(key, "tuple_key")
@@ -27,7 +27,7 @@ func TestTupleKeyFromProto(t *testing.T) {
 		t.Fatalf("unexpected tuple key: %+v", got)
 	}
 
-	_, err = tupleKeyFromProto(&authorizationv1.TupleKey{Relation: "member", Object: "tenant:tenant_1"}, "tuple_key")
+	_, err = tupleKeyFromProto(&authorizationv1.TupleKey{Relation: "member", Object: "organization:org_1"}, "tuple_key")
 	if err == nil || !strings.Contains(err.Error(), "tuple_key.user") {
 		t.Fatalf("expected missing user error, got %v", err)
 	}
@@ -57,11 +57,11 @@ func TestReadRequestFromProto(t *testing.T) {
 }
 
 func TestParseObject(t *testing.T) {
-	obj, err := parseObject("tenant:tenant_1")
+	obj, err := parseObject("organization:org_1")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
-	if obj.Type != "tenant" || obj.Id != "tenant_1" {
+	if obj.Type != "organization" || obj.Id != "org_1" {
 		t.Fatalf("unexpected object: %+v", obj)
 	}
 
@@ -70,12 +70,12 @@ func TestParseObject(t *testing.T) {
 		t.Fatal("expected error for empty object")
 	}
 
-	_, err = parseObject("tenant")
+	_, err = parseObject("organization")
 	if err == nil {
 		t.Fatal("expected error for missing id")
 	}
 
-	_, err = parseObject("tenant:tenant_1#member")
+	_, err = parseObject("organization:org_1#member")
 	if err == nil {
 		t.Fatal("expected error for userset format")
 	}
