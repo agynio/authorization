@@ -1,0 +1,39 @@
+name: Authorization Model Tests
+model_file: model.fga
+tuples:
+  - user: "identity:admin-user-id"
+    relation: admin
+    object: "cluster:global"
+  - user: "identity:org-owner-id"
+    relation: owner
+    object: "organization:org-1"
+  - user: "identity:org-member-id"
+    relation: member
+    object: "organization:org-1"
+tests:
+  - name: cluster admin can admin cluster
+    check:
+      - user: "identity:admin-user-id"
+        object: "cluster:global"
+        assertions:
+          admin: true
+  - name: non-admin cannot admin cluster
+    check:
+      - user: "identity:org-owner-id"
+        object: "cluster:global"
+        assertions:
+          admin: false
+  - name: org owner is also member
+    check:
+      - user: "identity:org-owner-id"
+        object: "organization:org-1"
+        assertions:
+          owner: true
+          member: true
+  - name: org member is not owner
+    check:
+      - user: "identity:org-member-id"
+        object: "organization:org-1"
+        assertions:
+          owner: false
+          member: true

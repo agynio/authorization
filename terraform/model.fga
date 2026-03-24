@@ -3,6 +3,10 @@ model
 
 type identity
 
+type cluster
+  relations
+    define admin: [identity]
+
 type organization
   relations
     define owner: [identity]
