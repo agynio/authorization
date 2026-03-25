@@ -4,6 +4,9 @@ tuples:
   - user: "identity:admin-user-id"
     relation: admin
     object: "cluster:global"
+  - user: "identity:writer-user-id"
+    relation: writer
+    object: "cluster:global"
   - user: "identity:org-owner-id"
     relation: owner
     object: "organization:org-1"
@@ -23,6 +26,18 @@ tests:
         object: "cluster:global"
         assertions:
           admin: false
+  - name: cluster writer can write cluster
+    check:
+      - user: "identity:writer-user-id"
+        object: "cluster:global"
+        assertions:
+          writer: true
+  - name: non-writer cannot write cluster
+    check:
+      - user: "identity:org-owner-id"
+        object: "cluster:global"
+        assertions:
+          writer: false
   - name: org owner is also member
     check:
       - user: "identity:org-owner-id"
