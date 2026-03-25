@@ -6,6 +6,7 @@ type identity
 type cluster
   relations
     define admin: [identity]
+    define writer: [identity]
 
 type organization
   relations
