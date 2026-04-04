@@ -13,6 +13,18 @@ tuples:
   - user: "identity:org-member-id"
     relation: member
     object: "organization:org-1"
+  - user: "cluster:global"
+    relation: cluster
+    object: "organization:org-1"
+  - user: "identity:app-installed-id"
+    relation: can_create_thread
+    object: "organization:org-1"
+  - user: "identity:app-installed-id"
+    relation: can_write_thread
+    object: "organization:org-1"
+  - user: "identity:app-installed-id"
+    relation: can_add_participant
+    object: "organization:org-1"
 tests:
   - name: cluster admin can admin cluster
     check:
@@ -52,3 +64,53 @@ tests:
         assertions:
           owner: false
           member: true
+  - name: org owner can invite and manage members
+    check:
+      - user: "identity:org-owner-id"
+        object: "organization:org-1"
+        assertions:
+          can_invite: true
+          can_manage_members: true
+  - name: org member cannot invite or manage members
+    check:
+      - user: "identity:org-member-id"
+        object: "organization:org-1"
+        assertions:
+          can_invite: false
+          can_manage_members: false
+  - name: cluster admin can add org members
+    check:
+      - user: "identity:admin-user-id"
+        object: "organization:org-1"
+        assertions:
+          can_add_member: true
+  - name: non-admin cannot add org members
+    check:
+      - user: "identity:org-owner-id"
+        object: "organization:org-1"
+        assertions:
+          can_add_member: false
+  - name: installed app has thread permissions
+    check:
+      - user: "identity:app-installed-id"
+        object: "organization:org-1"
+        assertions:
+          can_create_thread: true
+          can_write_thread: true
+          can_add_participant: true
+  - name: uninstalled app lacks thread permissions
+    check:
+      - user: "identity:app-uninstalled-id"
+        object: "organization:org-1"
+        assertions:
+          can_create_thread: false
+          can_write_thread: false
+          can_add_participant: false
+  - name: org member lacks app permissions
+    check:
+      - user: "identity:org-member-id"
+        object: "organization:org-1"
+        assertions:
+          can_create_thread: false
+          can_write_thread: false
+          can_add_participant: false
