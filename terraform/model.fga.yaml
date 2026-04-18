@@ -90,6 +90,24 @@ tests:
         object: "organization:org-1"
         assertions:
           can_add_member: false
+  - name: org owner can view threads
+    check:
+      - user: "identity:org-owner-id"
+        object: "organization:org-1"
+        assertions:
+          can_view_threads: true
+  - name: org member cannot view threads
+    check:
+      - user: "identity:org-member-id"
+        object: "organization:org-1"
+        assertions:
+          can_view_threads: false
+  - name: cluster admin can view threads
+    check:
+      - user: "identity:admin-user-id"
+        object: "organization:org-1"
+        assertions:
+          can_view_threads: true
   - name: installed app has thread permissions
     check:
       - user: "identity:app-installed-id"
