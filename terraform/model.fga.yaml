@@ -4,9 +4,6 @@ tuples:
   - user: "identity:admin-user-id"
     relation: admin
     object: "cluster:global"
-  - user: "identity:writer-user-id"
-    relation: writer
-    object: "cluster:global"
   - user: "identity:org-owner-id"
     relation: owner
     object: "organization:org-1"
@@ -17,14 +14,23 @@ tuples:
     relation: cluster
     object: "organization:org-1"
   - user: "identity:app-installed-id"
-    relation: can_create_thread
+    relation: thread_create
     object: "organization:org-1"
   - user: "identity:app-installed-id"
-    relation: can_write_thread
+    relation: thread_write
     object: "organization:org-1"
   - user: "identity:app-installed-id"
-    relation: can_add_participant
+    relation: participant_add
     object: "organization:org-1"
+  - user: "organization:org-1"
+    relation: org
+    object: "thread:thread-1"
+  - user: "identity:thread-participant-id"
+    relation: participant
+    object: "thread:thread-1"
+  - user: "organization:org-1"
+    relation: org
+    object: "model:model-1"
 tests:
   - name: cluster admin can admin cluster
     check:
@@ -38,46 +44,28 @@ tests:
         object: "cluster:global"
         assertions:
           admin: false
-  - name: cluster writer can write cluster
-    check:
-      - user: "identity:writer-user-id"
-        object: "cluster:global"
-        assertions:
-          writer: true
-  - name: non-writer cannot write cluster
-    check:
-      - user: "identity:org-owner-id"
-        object: "cluster:global"
-        assertions:
-          writer: false
-  - name: org owner is also member
+  - name: org owner inherits org permissions
     check:
       - user: "identity:org-owner-id"
         object: "organization:org-1"
         assertions:
           owner: true
           member: true
-  - name: org member is not owner
+          can_invite: true
+          can_manage_members: true
+          can_view_threads: true
+          can_create_thread: true
+  - name: org member has limited org permissions
     check:
       - user: "identity:org-member-id"
         object: "organization:org-1"
         assertions:
           owner: false
           member: true
-  - name: org owner can invite and manage members
-    check:
-      - user: "identity:org-owner-id"
-        object: "organization:org-1"
-        assertions:
-          can_invite: true
-          can_manage_members: true
-  - name: org member cannot invite or manage members
-    check:
-      - user: "identity:org-member-id"
-        object: "organization:org-1"
-        assertions:
           can_invite: false
           can_manage_members: false
+          can_view_threads: false
+          can_create_thread: true
   - name: cluster admin can add org members
     check:
       - user: "identity:admin-user-id"
@@ -90,45 +78,62 @@ tests:
         object: "organization:org-1"
         assertions:
           can_add_member: false
-  - name: org owner can view threads
-    check:
-      - user: "identity:org-owner-id"
-        object: "organization:org-1"
-        assertions:
-          can_view_threads: true
-  - name: org member cannot view threads
-    check:
-      - user: "identity:org-member-id"
-        object: "organization:org-1"
-        assertions:
-          can_view_threads: false
-  - name: cluster admin can view threads
-    check:
-      - user: "identity:admin-user-id"
-        object: "organization:org-1"
-        assertions:
-          can_view_threads: true
-  - name: installed app has thread permissions
+  - name: installed app has org app permissions
     check:
       - user: "identity:app-installed-id"
         object: "organization:org-1"
         assertions:
+          thread_create: true
+          thread_write: true
+          participant_add: true
           can_create_thread: true
-          can_write_thread: true
-          can_add_participant: true
-  - name: uninstalled app lacks thread permissions
+  - name: uninstalled app lacks org app permissions
     check:
       - user: "identity:app-uninstalled-id"
         object: "organization:org-1"
         assertions:
+          thread_create: false
+          thread_write: false
+          participant_add: false
           can_create_thread: false
-          can_write_thread: false
-          can_add_participant: false
-  - name: org member lacks app permissions
+  - name: thread participant can read write add
     check:
-      - user: "identity:org-member-id"
-        object: "organization:org-1"
+      - user: "identity:thread-participant-id"
+        object: "thread:thread-1"
         assertions:
-          can_create_thread: false
-          can_write_thread: false
+          can_read: true
+          can_write: true
+          can_add_participant: true
+  - name: org owner can read thread
+    check:
+      - user: "identity:org-owner-id"
+        object: "thread:thread-1"
+        assertions:
+          can_read: true
+          can_write: false
           can_add_participant: false
+  - name: installed app can write and add to thread
+    check:
+      - user: "identity:app-installed-id"
+        object: "thread:thread-1"
+        assertions:
+          can_read: false
+          can_write: true
+          can_add_participant: true
+  - name: model permissions derive from org roles
+    check:
+      - user: "identity:org-owner-id"
+        object: "model:model-1"
+        assertions:
+          can_manage: true
+          can_use: true
+      - user: "identity:org-member-id"
+        object: "model:model-1"
+        assertions:
+          can_manage: false
+          can_use: true
+      - user: "identity:app-installed-id"
+        object: "model:model-1"
+        assertions:
+          can_manage: false
+          can_use: false
