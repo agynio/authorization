@@ -16,6 +16,7 @@ type organization
     define can_invite: owner
     define can_manage_members: owner
     define can_add_member: admin from cluster
+    define can_view_threads: owner or admin from cluster
     define can_create_thread: [identity]
     define can_write_thread: [identity]
     define can_add_participant: [identity]
