@@ -54,6 +54,8 @@ tests:
           can_invite: true
           can_manage_members: true
           can_view_threads: true
+          can_view_workloads: true
+          can_view_volumes: true
           can_create_thread: true
   - name: org member has limited org permissions
     check:
@@ -65,6 +67,8 @@ tests:
           can_invite: false
           can_manage_members: false
           can_view_threads: false
+          can_view_workloads: false
+          can_view_volumes: false
           can_create_thread: true
   - name: cluster admin can add org members
     check:
@@ -72,6 +76,9 @@ tests:
         object: "organization:org-1"
         assertions:
           can_add_member: true
+          can_view_threads: true
+          can_view_workloads: true
+          can_view_volumes: true
   - name: non-admin cannot add org members
     check:
       - user: "identity:org-owner-id"
@@ -107,6 +114,14 @@ tests:
   - name: org owner can read thread
     check:
       - user: "identity:org-owner-id"
+        object: "thread:thread-1"
+        assertions:
+          can_read: true
+          can_write: false
+          can_add_participant: false
+  - name: cluster admin can read thread
+    check:
+      - user: "identity:admin-user-id"
         object: "thread:thread-1"
         assertions:
           can_read: true
