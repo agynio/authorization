@@ -23,6 +23,19 @@ type organization
     define thread_write: [identity]
     define participant_add: [identity]
 
+type agent
+  relations
+    define org: [organization]
+    define internal_access: [organization]
+    define owner: [identity] or owner from org
+    define maintainer: [identity]
+    define participant: [identity]
+    define can_initiate: participant or maintainer or owner or member from internal_access
+    define can_read_config: maintainer or owner
+    define can_edit_config: maintainer or owner
+    define can_manage_roles: owner
+    define can_delete: owner
+
 type thread
   relations
     define org: [organization]

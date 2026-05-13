@@ -31,6 +31,24 @@ tuples:
   - user: "organization:org-1"
     relation: org
     object: "model:model-1"
+  - user: "organization:org-1"
+    relation: org
+    object: "agent:internal-agent"
+  - user: "organization:org-1"
+    relation: internal_access
+    object: "agent:internal-agent"
+  - user: "organization:org-1"
+    relation: org
+    object: "agent:private-agent"
+  - user: "identity:agent-owner-id"
+    relation: owner
+    object: "agent:private-agent"
+  - user: "identity:agent-maintainer-id"
+    relation: maintainer
+    object: "agent:private-agent"
+  - user: "identity:agent-participant-id"
+    relation: participant
+    object: "agent:private-agent"
 tests:
   - name: cluster admin can admin cluster
     check:
@@ -152,3 +170,58 @@ tests:
         assertions:
           can_manage: false
           can_use: false
+  - name: internal agent can be initiated by org member
+    check:
+      - user: "identity:org-member-id"
+        object: "agent:internal-agent"
+        assertions:
+          can_initiate: true
+          can_read_config: false
+          can_edit_config: false
+          can_manage_roles: false
+          can_delete: false
+      - user: "identity:app-installed-id"
+        object: "agent:internal-agent"
+        assertions:
+          can_initiate: false
+  - name: private agent requires agent role to initiate
+    check:
+      - user: "identity:org-member-id"
+        object: "agent:private-agent"
+        assertions:
+          can_initiate: false
+      - user: "identity:agent-participant-id"
+        object: "agent:private-agent"
+        assertions:
+          can_initiate: true
+          can_read_config: false
+          can_edit_config: false
+          can_manage_roles: false
+          can_delete: false
+      - user: "identity:agent-maintainer-id"
+        object: "agent:private-agent"
+        assertions:
+          can_initiate: true
+          can_read_config: true
+          can_edit_config: true
+          can_manage_roles: false
+          can_delete: false
+      - user: "identity:agent-owner-id"
+        object: "agent:private-agent"
+        assertions:
+          can_initiate: true
+          can_read_config: true
+          can_edit_config: true
+          can_manage_roles: true
+          can_delete: true
+  - name: org owner has owner-level capabilities on agents
+    check:
+      - user: "identity:org-owner-id"
+        object: "agent:private-agent"
+        assertions:
+          owner: true
+          can_initiate: true
+          can_read_config: true
+          can_edit_config: true
+          can_manage_roles: true
+          can_delete: true
