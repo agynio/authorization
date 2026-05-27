@@ -30,6 +30,12 @@ tuples:
     object: "thread:thread-1"
   - user: "organization:org-1"
     relation: org
+    object: "workload:workload-1"
+  - user: "identity:workload-owner-agent-id"
+    relation: owner_agent
+    object: "workload:workload-1"
+  - user: "organization:org-1"
+    relation: org
     object: "model:model-1"
   - user: "organization:org-1"
     relation: org
@@ -153,6 +159,32 @@ tests:
           can_read: false
           can_write: true
           can_add_participant: true
+  - name: workload owner agent can view own workload
+    check:
+      - user: "identity:workload-owner-agent-id"
+        object: "workload:workload-1"
+        assertions:
+          owner_agent: true
+          can_view: true
+      - user: "identity:app-installed-id"
+        object: "workload:workload-1"
+        assertions:
+          owner_agent: false
+          can_view: false
+  - name: org roles derive workload view access
+    check:
+      - user: "identity:org-owner-id"
+        object: "workload:workload-1"
+        assertions:
+          can_view: true
+      - user: "identity:admin-user-id"
+        object: "workload:workload-1"
+        assertions:
+          can_view: true
+      - user: "identity:org-member-id"
+        object: "workload:workload-1"
+        assertions:
+          can_view: false
   - name: model permissions derive from org roles
     check:
       - user: "identity:org-owner-id"

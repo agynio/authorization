@@ -44,6 +44,12 @@ type thread
     define can_write: participant or thread_write from org
     define can_add_participant: participant or participant_add from org
 
+type workload
+  relations
+    define org: [organization]
+    define owner_agent: [identity]
+    define can_view: owner_agent or can_view_workloads from org
+
 type model
   relations
     define org: [organization]
