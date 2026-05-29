@@ -100,7 +100,9 @@ pipelines:
         start_dev --disable-pod-replace authorization
         echo "Waiting for authorization to be healthy on :50051..."
         healthy=false
-        for _ in $(seq 1 60); do
+        pod_name=""
+        container_name=""
+        for _ in $(seq 1 150); do
           pod_name="$(kubectl get pod -n "${AUTHORIZATION_NAMESPACE}" \
             -l "${AUTHORIZATION_SELECTOR}" \
             --field-selector=status.phase=Running \
@@ -118,7 +120,7 @@ pipelines:
             sleep 2
             continue
           fi
-          if kubectl exec -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -c "$container_name" -- sh -c 'nc -z localhost 50051 >/dev/null 2>&1 || (echo > /dev/tcp/localhost/50051) >/dev/null 2>&1'; then
+          if kubectl exec -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -c "$container_name" -- bash -c 'echo >/dev/tcp/127.0.0.1/50051' >/dev/null 2>&1; then
             healthy=true
             break
           fi
@@ -127,7 +129,10 @@ pipelines:
           sleep 2
         done
         if [ "$healthy" != "true" ]; then
-          echo "ERROR: Authorization did not become healthy within 120s" >&2
+          echo "ERROR: Authorization did not become healthy within 300s" >&2
+          if [ -n "$pod_name" ] && [ -n "$container_name" ]; then
+            kubectl logs -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -c "$container_name" --tail=50 || true
+          fi
           exit 1
         fi
         echo "Dev environment ready. Stopping dev session."
