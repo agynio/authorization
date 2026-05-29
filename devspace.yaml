@@ -2,6 +2,7 @@ version: v2beta1
 
 vars:
   AUTHORIZATION_NAMESPACE: platform
+  AUTHORIZATION_SELECTOR: app.kubernetes.io/name=authorization,app.kubernetes.io/instance=authorization
 
 functions:
   disable_argocd_sync: |-
@@ -24,7 +25,14 @@ functions:
     fi
   patch_deployment: |-
     echo "Patching authorization deployment for DevSpace..."
-    kubectl patch deployment authorization-authorization -n ${AUTHORIZATION_NAMESPACE} --type strategic --patch "$(cat <<'EOF'
+    deployment_name="$(kubectl get deployment -n "${AUTHORIZATION_NAMESPACE}" \
+      -l "${AUTHORIZATION_SELECTOR}" \
+      -o jsonpath='{.items[0].metadata.name}')"
+    if [ -z "$deployment_name" ]; then
+      echo "ERROR: authorization deployment not found for selector ${AUTHORIZATION_SELECTOR}" >&2
+      exit 1
+    fi
+    kubectl patch deployment "$deployment_name" -n "${AUTHORIZATION_NAMESPACE}" --type strategic --patch "$(cat <<'EOF'
     spec:
       template:
         spec:
@@ -90,7 +98,7 @@ pipelines:
         echo "Waiting for authorization to be healthy on :50051..."
         healthy=false
         for i in $(seq 1 60); do
-          if exec_container --label-selector=app.kubernetes.io/name=authorization -n ${AUTHORIZATION_NAMESPACE} -- bash -c 'nc -z localhost 50051 >/dev/null 2>&1 || (echo > /dev/tcp/localhost/50051) >/dev/null 2>&1'; then
+          if exec_container --label-selector="${AUTHORIZATION_SELECTOR}" -n "${AUTHORIZATION_NAMESPACE}" -- bash -c 'nc -z localhost 50051 >/dev/null 2>&1 || (echo > /dev/tcp/localhost/50051) >/dev/null 2>&1'; then
             healthy=true
             break
           fi
