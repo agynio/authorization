@@ -131,10 +131,20 @@ pipelines:
             sleep 2
             continue
           fi
-          if kubectl exec -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -c authorization -- sh -c 'nc -z localhost 50051 >/dev/null 2>&1 || (echo > /dev/tcp/localhost/50051) >/dev/null 2>&1'; then
+          container_name="$(kubectl get pod -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" \
+            -o jsonpath='{.spec.containers[0].name}' 2>/dev/null || true)"
+          if [ -z "$container_name" ]; then
+            echo "ERROR: Could not resolve container name for pod $pod_name" >&2
+            kubectl get pod -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -o jsonpath='{range .spec.containers[*]}{.name}{"\n"}{end}' || true
+            sleep 2
+            continue
+          fi
+          if kubectl exec -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -c "$container_name" -- sh -c 'nc -z localhost 50051 >/dev/null 2>&1 || (echo > /dev/tcp/localhost/50051) >/dev/null 2>&1'; then
             healthy=true
             break
           fi
+          echo "Authorization health check failed in pod $pod_name container $container_name; pod containers:" >&2
+          kubectl get pod -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -o jsonpath='{range .spec.containers[*]}{.name}{"\n"}{end}' || true
           sleep 2
         done
         if [ "$healthy" != "true" ]; then
