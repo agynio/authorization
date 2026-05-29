@@ -47,40 +47,19 @@ functions:
             - name: authorization
               image: ghcr.io/agynio/devcontainer-go:1 # dev container for source deploy
               workingDir: /opt/app/data
+              livenessProbe: null
+              readinessProbe: null
+              startupProbe: null
               command:
                 - sh
                 - -c
                 - |
                   set -eu
-                  cat >/tmp/devspace-ready.go <<'GOEOF'
-                  package main
-
-                  import "net"
-
-                  func main() {
-                    listener, err := net.Listen("tcp", ":50051")
-                    if err != nil {
-                      panic(err)
-                    }
-                    for {
-                      conn, err := listener.Accept()
-                      if err == nil {
-                        _ = conn.Close()
-                      }
-                    }
-                  }
-                  GOEOF
-                  go run /tmp/devspace-ready.go &
-                  ready_pid="$!"
-                  trap 'kill "$ready_pid" 2>/dev/null || true' EXIT INT TERM
                   elapsed=0
                   while [ ! -f /opt/app/data/go.mod ]; do
                     sleep 1; elapsed=$((elapsed + 1))
                     [ "$elapsed" -ge 120 ] && { echo "ERROR: sync timeout" >&2; exit 1; }
                   done
-                  kill "$ready_pid" 2>/dev/null || true
-                  wait "$ready_pid" 2>/dev/null || true
-                  trap - EXIT INT TERM
                   buf generate buf.build/agynio/api --path agynio/api/authorization/v1
                   exec go run ./cmd/authorization
               volumeMounts:
