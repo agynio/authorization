@@ -2,6 +2,7 @@ version: v2beta1
 
 vars:
   AUTHORIZATION_NAMESPACE: platform
+  AUTHORIZATION_SELECTOR: app.kubernetes.io/name=authorization,app.kubernetes.io/instance=authorization
 
 functions:
   disable_argocd_sync: |-
@@ -24,7 +25,14 @@ functions:
     fi
   patch_deployment: |-
     echo "Patching authorization deployment for DevSpace..."
-    kubectl patch deployment authorization-authorization -n ${AUTHORIZATION_NAMESPACE} --type strategic --patch "$(cat <<'EOF'
+    deployment_name="$(kubectl get deployment -n "${AUTHORIZATION_NAMESPACE}" \
+      -l "${AUTHORIZATION_SELECTOR}" \
+      -o jsonpath='{.items[0].metadata.name}')"
+    if [ -z "$deployment_name" ]; then
+      echo "ERROR: authorization deployment not found for selector ${AUTHORIZATION_SELECTOR}" >&2
+      exit 1
+    fi
+    kubectl patch deployment "$deployment_name" -n "${AUTHORIZATION_NAMESPACE}" --type strategic --patch "$(cat <<'EOF'
     spec:
       template:
         spec:
@@ -39,6 +47,9 @@ functions:
             - name: authorization
               image: ghcr.io/agynio/devcontainer-go:1 # dev container for source deploy
               workingDir: /opt/app/data
+              livenessProbe: null
+              readinessProbe: null
+              startupProbe: null
               command:
                 - sh
                 - -c
@@ -89,15 +100,39 @@ pipelines:
         start_dev --disable-pod-replace authorization
         echo "Waiting for authorization to be healthy on :50051..."
         healthy=false
-        for i in $(seq 1 60); do
-          if exec_container --label-selector=app.kubernetes.io/name=authorization -n ${AUTHORIZATION_NAMESPACE} -- bash -c 'nc -z localhost 50051 >/dev/null 2>&1 || (echo > /dev/tcp/localhost/50051) >/dev/null 2>&1'; then
+        pod_name=""
+        container_name=""
+        for _ in $(seq 1 150); do
+          pod_name="$(kubectl get pod -n "${AUTHORIZATION_NAMESPACE}" \
+            -l "${AUTHORIZATION_SELECTOR}" \
+            --field-selector=status.phase=Running \
+            -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+          if [ -z "$pod_name" ]; then
+            kubectl get pods -n "${AUTHORIZATION_NAMESPACE}" -l "${AUTHORIZATION_SELECTOR}" -o wide || true
+            sleep 2
+            continue
+          fi
+          container_name="$(kubectl get pod -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" \
+            -o jsonpath='{.spec.containers[0].name}' 2>/dev/null || true)"
+          if [ -z "$container_name" ]; then
+            echo "ERROR: Could not resolve container name for pod $pod_name" >&2
+            kubectl get pod -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -o jsonpath='{range .spec.containers[*]}{.name}{"\n"}{end}' || true
+            sleep 2
+            continue
+          fi
+          if kubectl exec -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -c "$container_name" -- bash -c 'echo >/dev/tcp/127.0.0.1/50051' >/dev/null 2>&1; then
             healthy=true
             break
           fi
+          echo "Authorization health check failed in pod $pod_name container $container_name; pod containers:" >&2
+          kubectl get pod -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -o jsonpath='{range .spec.containers[*]}{.name}{"\n"}{end}' || true
           sleep 2
         done
         if [ "$healthy" != "true" ]; then
-          echo "ERROR: Authorization did not become healthy within 120s" >&2
+          echo "ERROR: Authorization did not become healthy within 300s" >&2
+          if [ -n "$pod_name" ] && [ -n "$container_name" ]; then
+            kubectl logs -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -c "$container_name" --tail=50 || true
+          fi
           exit 1
         fi
         echo "Dev environment ready. Stopping dev session."
@@ -126,18 +161,42 @@ dev:
           - path: ./:/opt/app/data
             excludePaths:
               - .git/
+              - .github/
               - .devspace/
               - /.gen/
+              - /bootstrap/
+              - /bin/
+              - /build/
+              - /coverage/
+              - /dist/
+              - /node_modules/
+              - /vendor/
               - /tmp/
             uploadExcludePaths:
               - .git/
+              - .github/
               - .devspace/
               - /.gen/
+              - /bootstrap/
+              - /bin/
+              - /build/
+              - /coverage/
+              - /dist/
+              - /node_modules/
+              - /vendor/
               - /tmp/
             downloadExcludePaths:
               - .git/
+              - .github/
               - .devspace/
               - /.gen/
+              - /bootstrap/
+              - /bin/
+              - /build/
+              - /coverage/
+              - /dist/
+              - /node_modules/
+              - /vendor/
               - /tmp/
         logs:
           enabled: true
