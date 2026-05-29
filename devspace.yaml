@@ -121,8 +121,17 @@ pipelines:
         start_dev --disable-pod-replace authorization
         echo "Waiting for authorization to be healthy on :50051..."
         healthy=false
-        for i in $(seq 1 60); do
-          if exec_container --label-selector="${AUTHORIZATION_SELECTOR}" -n "${AUTHORIZATION_NAMESPACE}" -- bash -c 'nc -z localhost 50051 >/dev/null 2>&1 || (echo > /dev/tcp/localhost/50051) >/dev/null 2>&1'; then
+        for _ in $(seq 1 60); do
+          pod_name="$(kubectl get pod -n "${AUTHORIZATION_NAMESPACE}" \
+            -l "${AUTHORIZATION_SELECTOR}" \
+            --field-selector=status.phase=Running \
+            -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+          if [ -z "$pod_name" ]; then
+            kubectl get pods -n "${AUTHORIZATION_NAMESPACE}" -l "${AUTHORIZATION_SELECTOR}" -o wide || true
+            sleep 2
+            continue
+          fi
+          if kubectl exec -n "${AUTHORIZATION_NAMESPACE}" "$pod_name" -c authorization -- sh -c 'nc -z localhost 50051 >/dev/null 2>&1 || (echo > /dev/tcp/localhost/50051) >/dev/null 2>&1'; then
             healthy=true
             break
           fi
