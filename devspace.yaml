@@ -177,18 +177,42 @@ dev:
           - path: ./:/opt/app/data
             excludePaths:
               - .git/
+              - .github/
               - .devspace/
               - /.gen/
+              - /bootstrap/
+              - /bin/
+              - /build/
+              - /coverage/
+              - /dist/
+              - /node_modules/
+              - /vendor/
               - /tmp/
             uploadExcludePaths:
               - .git/
+              - .github/
               - .devspace/
               - /.gen/
+              - /bootstrap/
+              - /bin/
+              - /build/
+              - /coverage/
+              - /dist/
+              - /node_modules/
+              - /vendor/
               - /tmp/
             downloadExcludePaths:
               - .git/
+              - .github/
               - .devspace/
               - /.gen/
+              - /bootstrap/
+              - /bin/
+              - /build/
+              - /coverage/
+              - /dist/
+              - /node_modules/
+              - /vendor/
               - /tmp/
         logs:
           enabled: true
