@@ -1,3 +1,14 @@
+{{- $env := list -}}
+{{- if .Values.openfgaApiUrl }}
+{{- $env = append $env (dict "name" "OPENFGA_API_URL" "value" .Values.openfgaApiUrl) -}}
+{{- end }}
+{{- if .Values.openfgaStoreId }}
+{{- $env = append $env (dict "name" "OPENFGA_STORE_ID" "value" .Values.openfgaStoreId) -}}
+{{- end }}
+{{- if .Values.openfgaModelId }}
+{{- $env = append $env (dict "name" "OPENFGA_MODEL_ID" "value" .Values.openfgaModelId) -}}
+{{- end }}
+{{- $_ := set .Values "env" (concat $env (.Values.env | default (list))) -}}
 {{ include "service-base.rbac" . }}
 ---
 {{ include "service-base.serviceAccount" . }}

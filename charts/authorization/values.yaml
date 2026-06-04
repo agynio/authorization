@@ -1,5 +1,5 @@
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "authorization"
 
 global:
   imageRegistry: ""
@@ -39,6 +39,8 @@ podSecurityContext:
 
 securityContext:
   enabled: true
+  runAsUser: 100
+  runAsGroup: 101
   runAsNonRoot: true
   readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
@@ -69,15 +71,7 @@ containerPorts:
 
 command: []
 args: []
-env:
-  - name: GRPC_ADDRESS
-    value: ":50051"
-  - name: OPENFGA_API_URL
-    value: ""
-  - name: OPENFGA_STORE_ID
-    value: ""
-  - name: OPENFGA_MODEL_ID
-    value: ""
+env: []
 envFrom: []
 extraEnvVars: []
 extraEnvVarsCM: ""
@@ -160,3 +154,7 @@ metrics:
         path: /metrics
         interval: ""
         scrapeTimeout: ""
+
+openfgaApiUrl: ""
+openfgaStoreId: ""
+openfgaModelId: ""
