@@ -55,6 +55,33 @@ tuples:
   - user: "identity:agent-participant-id"
     relation: participant
     object: "agent:private-agent"
+  - user: "organization:org-1"
+    relation: org
+    object: "group:platform-team"
+  - user: "identity:group-member-id"
+    relation: member
+    object: "group:platform-team"
+  - user: "identity:group-admin-id"
+    relation: admin
+    object: "group:platform-team"
+  - user: "organization:org-1"
+    relation: org
+    object: "group:agent-maintainers"
+  - user: "identity:agent-maintainer-group-member-id"
+    relation: member
+    object: "group:agent-maintainers"
+  - user: "group:agent-maintainers#member"
+    relation: maintainer
+    object: "agent:private-agent"
+  - user: "organization:org-1"
+    relation: org
+    object: "group:agent-participants"
+  - user: "identity:agent-participant-group-member-id"
+    relation: member
+    object: "group:agent-participants"
+  - user: "group:agent-participants#member"
+    relation: participant
+    object: "agent:private-agent"
 tests:
   - name: cluster admin can admin cluster
     check:
@@ -230,12 +257,41 @@ tests:
           can_edit_config: false
           can_manage_roles: false
           can_delete: false
+      - user: "identity:agent-participant-group-member-id"
+        object: "agent:private-agent"
+        assertions:
+          participant: true
+          can_initiate: true
+          can_read_config: false
+          can_edit_config: false
+          can_manage_roles: false
+          can_delete: false
       - user: "identity:agent-maintainer-id"
         object: "agent:private-agent"
         assertions:
           can_initiate: true
           can_read_config: true
           can_edit_config: true
+          can_manage_roles: false
+          can_delete: false
+      - user: "identity:agent-maintainer-group-member-id"
+        object: "agent:private-agent"
+        assertions:
+          maintainer: true
+          can_initiate: true
+          can_read_config: true
+          can_edit_config: true
+          can_manage_roles: false
+          can_delete: false
+      - user: "identity:agent-role-non-member-id"
+        object: "agent:private-agent"
+        assertions:
+          participant: false
+          maintainer: false
+          owner: false
+          can_initiate: false
+          can_read_config: false
+          can_edit_config: false
           can_manage_roles: false
           can_delete: false
       - user: "identity:agent-owner-id"
@@ -246,12 +302,45 @@ tests:
           can_edit_config: true
           can_manage_roles: true
           can_delete: true
+  - name: group permissions derive from membership and org roles
+    check:
+      - user: "identity:group-member-id"
+        object: "group:platform-team"
+        assertions:
+          member: true
+          can_view: true
+          can_edit: false
+      - user: "identity:org-member-id"
+        object: "group:platform-team"
+        assertions:
+          member: false
+          can_view: true
+          can_edit: false
+      - user: "identity:group-admin-id"
+        object: "group:platform-team"
+        assertions:
+          admin: true
+          can_view: false
+          can_edit: true
+      - user: "identity:org-owner-id"
+        object: "group:platform-team"
+        assertions:
+          member: false
+          can_view: true
+          can_edit: true
+      - user: "identity:agent-role-non-member-id"
+        object: "group:platform-team"
+        assertions:
+          member: false
+          admin: false
+          can_view: false
+          can_edit: false
   - name: org owner has owner-level capabilities on agents
     check:
       - user: "identity:org-owner-id"
         object: "agent:private-agent"
         assertions:
-          owner: true
+          owner: false
           can_initiate: true
           can_read_config: true
           can_edit_config: true
