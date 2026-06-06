@@ -341,7 +341,7 @@ tests:
         object: "agent:private-agent"
         assertions:
           owner: false
-          can_initiate: false
+          can_initiate: true
           can_read_config: true
           can_edit_config: true
           can_manage_roles: true

@@ -38,7 +38,7 @@ type agent
     define owner: [identity, group#member]
     define maintainer: [identity, group#member]
     define participant: [identity, group#member]
-    define can_initiate: participant or maintainer or owner or member from internal_access
+    define can_initiate: participant or maintainer or owner or owner from org or member from internal_access
     define can_read_config: maintainer or owner or owner from org
     define can_edit_config: maintainer or owner or owner from org
     define can_manage_roles: owner or owner from org
