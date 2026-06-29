@@ -2,11 +2,17 @@
 {{- if .Values.openfgaApiUrl }}
 {{- $env = append $env (dict "name" "OPENFGA_API_URL" "value" .Values.openfgaApiUrl) -}}
 {{- end }}
+{{- /* store/model IDs come from the migration Job's output Secret; an explicit
+       openfgaStoreId/openfgaModelId value still overrides (e.g. for tests). */ -}}
 {{- if .Values.openfgaStoreId }}
 {{- $env = append $env (dict "name" "OPENFGA_STORE_ID" "value" .Values.openfgaStoreId) -}}
+{{- else if .Values.migration.enabled }}
+{{- $env = append $env (dict "name" "OPENFGA_STORE_ID" "valueFrom" (dict "secretKeyRef" (dict "name" .Values.migration.outputSecret "key" "OPENFGA_STORE_ID"))) -}}
 {{- end }}
 {{- if .Values.openfgaModelId }}
 {{- $env = append $env (dict "name" "OPENFGA_MODEL_ID" "value" .Values.openfgaModelId) -}}
+{{- else if .Values.migration.enabled }}
+{{- $env = append $env (dict "name" "OPENFGA_MODEL_ID" "valueFrom" (dict "secretKeyRef" (dict "name" .Values.migration.outputSecret "key" "OPENFGA_MODEL_ID"))) -}}
 {{- end }}
 {{- $_ := set .Values "env" (concat $env (.Values.env | default (list))) -}}
 {{ include "service-base.rbac" . }}

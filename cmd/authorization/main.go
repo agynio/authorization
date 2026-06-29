@@ -14,11 +14,24 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/agynio/authorization/internal/config"
+	"github.com/agynio/authorization/internal/migrate"
 	"github.com/agynio/authorization/internal/server"
 	openfgaclient "github.com/openfga/go-sdk/client"
 )
 
 func main() {
+	// `authorization migrate` provisions the OpenFGA store + model and writes
+	// the resulting IDs to a Secret (run as a Helm migration Job). With no
+	// subcommand it runs the gRPC server.
+	if len(os.Args) > 1 && os.Args[1] == "migrate" {
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		defer stop()
+		if err := migrate.Run(ctx); err != nil {
+			log.Fatalf("authorization migrate: %v", err)
+		}
+		return
+	}
+
 	if err := run(); err != nil {
 		log.Fatalf("authorization: %v", err)
 	}

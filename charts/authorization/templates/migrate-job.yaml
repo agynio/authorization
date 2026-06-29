@@ -1,0 +1,65 @@
+{{- if .Values.migration.enabled }}
+{{- $name := printf "%s-migrate" (.Values.fullnameOverride | default "authorization") }}
+{{- $registry := .Values.image.registry | default .Values.global.imageRegistry }}
+{{- $repo := .Values.image.repository }}
+{{- $tag := .Values.image.tag | default .Chart.AppVersion }}
+{{- $image := ternary (printf "%s/%s:%s" $registry $repo $tag) (printf "%s:%s" $repo $tag) (ne $registry "") }}
+# Migration Job: provisions the OpenFGA store + authorization model (DSL is
+# embedded in this same image) and writes OPENFGA_STORE_ID / OPENFGA_MODEL_ID
+# into the output Secret the Deployment reads. Runs before each sync/upgrade.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "-5"
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: {{ .Values.migration.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ $name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ $name }}
+      {{- with .Values.image.pullSecrets | default .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: {{ .Values.securityContext.runAsUser | default 100 }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup | default 101 }}
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrate
+          image: {{ $image | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["migrate"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: OPENFGA_API_URL
+              value: {{ .Values.openfgaApiUrl | quote }}
+            - name: OPENFGA_STORE_NAME
+              value: {{ .Values.migration.storeName | quote }}
+            - name: OPENFGA_OUTPUT_SECRET
+              value: {{ .Values.migration.outputSecret | quote }}
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            {{- toYaml .Values.migration.resources | nindent 12 }}
+{{- end }}

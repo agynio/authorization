@@ -7,7 +7,10 @@ resource "openfga_store" "this" {
 }
 
 data "openfga_authorization_model_document" "this" {
-  dsl = file("${path.module}/model.fga")
+  # Single source of truth: the model lives in internal/authz/model.fga so the
+  # service image can go:embed it. Git module sources fetch the whole repo, so
+  # this relative path resolves both locally and when consumed remotely.
+  dsl = file("${path.module}/../internal/authz/model.fga")
 }
 
 resource "openfga_authorization_model" "this" {

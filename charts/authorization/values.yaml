@@ -156,5 +156,18 @@ metrics:
         scrapeTimeout: ""
 
 openfgaApiUrl: ""
+# Leave empty in normal operation: the migration Job provisions the store/model
+# and the Deployment reads the IDs from migration.outputSecret. Set these only
+# to pin/override explicitly (e.g. tests).
 openfgaStoreId: ""
 openfgaModelId: ""
+
+# Migration Job: provisions the OpenFGA store + authorization model (DSL is
+# embedded in the image) and writes the store/model IDs into outputSecret, which
+# the Deployment consumes via secretKeyRef. Runs as a pre-sync/pre-upgrade hook.
+migration:
+  enabled: true
+  storeName: "agyn-platform"
+  outputSecret: "authorization-openfga"
+  backoffLimit: 6
+  resources: {}
