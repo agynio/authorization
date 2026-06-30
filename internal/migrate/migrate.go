@@ -26,11 +26,11 @@ import (
 )
 
 const (
-	defaultStoreName    = "agyn-platform"
-	storeIDSecretKey    = "OPENFGA_STORE_ID"
-	modelIDSecretKey    = "OPENFGA_MODEL_ID"
-	namespaceFile       = "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
-	storeListPageSize   = 100
+	defaultStoreName = "agyn-platform"
+	storeIDSecretKey = "OPENFGA_STORE_ID"
+	modelIDSecretKey = "OPENFGA_MODEL_ID"
+	namespaceFile    = "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
+	storeListPage    = 100
 )
 
 // Config is the migration configuration, read from the environment.
@@ -109,9 +109,7 @@ func Run(ctx context.Context) error {
 func ensureStore(ctx context.Context, client *openfgaclient.OpenFgaClient, storeName string) (string, error) {
 	var continuation string
 	for {
-		opts := openfgaclient.ClientListStoresOptions{
-			PageSize: openfgaPtr(int32(storeListPageSize)),
-		}
+		opts := openfgaclient.ClientListStoresOptions{PageSize: ptr(int32(storeListPage))}
 		if continuation != "" {
 			opts.ContinuationToken = &continuation
 		}
@@ -153,9 +151,10 @@ func ensureModel(ctx context.Context, client *openfgaclient.OpenFgaClient) (stri
 	}
 
 	if latest, err := client.ReadLatestAuthorizationModel(ctx).Execute(); err == nil && latest.AuthorizationModel != nil {
-		same, err := sameModel([]byte(modelJSON), latest.AuthorizationModel)
-		if err == nil && same {
-			return latest.AuthorizationModel.GetId(), nil
+		if existing, mErr := json.Marshal(latest.AuthorizationModel); mErr == nil {
+			if same, cErr := sameModel([]byte(modelJSON), existing); cErr == nil && same {
+				return latest.AuthorizationModel.GetId(), nil
+			}
 		}
 	}
 
@@ -166,28 +165,21 @@ func ensureModel(ctx context.Context, client *openfgaclient.OpenFgaClient) (stri
 	return written.GetAuthorizationModelId(), nil
 }
 
-// sameModel compares the desired model JSON against an existing model,
-// ignoring the server-assigned id, by canonicalising both sides.
-func sameModel(desiredJSON []byte, existing interface{}) (bool, error) {
-	existingJSON, err := json.Marshal(existing)
+// sameModel compares two model JSON blobs ignoring the server-assigned id.
+func sameModel(a, b []byte) (bool, error) {
+	ca, err := canonicalModel(a)
 	if err != nil {
 		return false, err
 	}
-	a, err := canonicalModel(desiredJSON)
+	cb, err := canonicalModel(b)
 	if err != nil {
 		return false, err
 	}
-	b, err := canonicalModel(existingJSON)
-	if err != nil {
-		return false, err
-	}
-	return a == b, nil
+	return ca == cb, nil
 }
 
-// canonicalModel strips the model id and re-marshals so key ordering is
-// deterministic, giving a stable string for equality comparison.
 func canonicalModel(raw []byte) (string, error) {
-	var m map[string]interface{}
+	var m map[string]any
 	if err := json.Unmarshal(raw, &m); err != nil {
 		return "", err
 	}
@@ -199,6 +191,8 @@ func canonicalModel(raw []byte) (string, error) {
 	return string(out), nil
 }
 
+// writeOutputSecret upserts the output Secret with the store/model IDs using
+// in-cluster credentials.
 func writeOutputSecret(ctx context.Context, cfg Config, storeID, modelID string) error {
 	restCfg, err := rest.InClusterConfig()
 	if err != nil {
@@ -236,4 +230,4 @@ func writeOutputSecret(ctx context.Context, cfg Config, storeID, modelID string)
 	return nil
 }
 
-func openfgaPtr[T any](v T) *T { return &v }
+func ptr[T any](v T) *T { return &v }
