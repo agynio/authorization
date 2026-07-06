@@ -152,7 +152,7 @@ func ensureModel(ctx context.Context, client *openfgaclient.OpenFgaClient) (stri
 
 	if latest, err := client.ReadLatestAuthorizationModel(ctx).Execute(); err == nil && latest.AuthorizationModel != nil {
 		if existing, mErr := json.Marshal(latest.AuthorizationModel); mErr == nil {
-			if same, cErr := sameModel([]byte(modelJSON), existing); cErr == nil && same {
+			if same, cErr := sameModel(modelJSON, string(existing)); cErr == nil && same {
 				return latest.AuthorizationModel.GetId(), nil
 			}
 		}
@@ -165,30 +165,23 @@ func ensureModel(ctx context.Context, client *openfgaclient.OpenFgaClient) (stri
 	return written.GetAuthorizationModelId(), nil
 }
 
-// sameModel compares two model JSON blobs ignoring the server-assigned id.
-func sameModel(a, b []byte) (bool, error) {
-	ca, err := canonicalModel(a)
+// sameModel reports whether two authorization models (as JSON) are semantically
+// identical. It compares their canonical DSL forms rather than the JSON:
+// OpenFGA hydrates a stored model with zero-value fields the transformer omits
+// (empty module/condition strings, empty relation metadata, an empty conditions
+// map), so a structural JSON compare reports a spurious difference on every run
+// and churns a new model on each sync. Round-tripping both sides through the DSL
+// transformer strips that noise, leaving a stable comparison.
+func sameModel(a, b string) (bool, error) {
+	da, err := transformer.TransformJSONStringToDSL(a)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("normalize model a: %w", err)
 	}
-	cb, err := canonicalModel(b)
+	db, err := transformer.TransformJSONStringToDSL(b)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("normalize model b: %w", err)
 	}
-	return ca == cb, nil
-}
-
-func canonicalModel(raw []byte) (string, error) {
-	var m map[string]any
-	if err := json.Unmarshal(raw, &m); err != nil {
-		return "", err
-	}
-	delete(m, "id")
-	out, err := json.Marshal(m)
-	if err != nil {
-		return "", err
-	}
-	return string(out), nil
+	return *da == *db, nil
 }
 
 // writeOutputSecret upserts the output Secret with the store/model IDs using
