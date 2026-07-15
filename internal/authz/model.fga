@@ -19,6 +19,8 @@ type organization
     define can_view_volumes: owner or admin from cluster
     define can_add_member: admin from cluster
     define can_create_thread: member or thread_create
+    define can_create_sandbox: member
+    define can_list_sandboxes: owner
     define thread_create: [identity]
     define thread_write: [identity]
     define participant_add: [identity]
@@ -57,6 +59,15 @@ type workload
     define org: [organization]
     define owner_agent: [identity]
     define can_view: owner_agent or can_view_workloads from org
+
+type sandbox
+  relations
+    define org: [organization]
+    define owner: [identity]
+    define can_connect: owner
+    define can_stop: owner or owner from org
+    define can_delete: owner or owner from org
+    define can_list_all: owner from org
 
 type model
   relations

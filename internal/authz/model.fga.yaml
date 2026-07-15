@@ -36,6 +36,18 @@ tuples:
     object: "workload:workload-1"
   - user: "organization:org-1"
     relation: org
+    object: "sandbox:sandbox-1"
+  - user: "identity:sandbox-owner-id"
+    relation: owner
+    object: "sandbox:sandbox-1"
+  - user: "organization:org-1"
+    relation: org
+    object: "sandbox:org-owner-owned-sandbox"
+  - user: "identity:org-owner-id"
+    relation: owner
+    object: "sandbox:org-owner-owned-sandbox"
+  - user: "organization:org-1"
+    relation: org
     object: "model:model-1"
   - user: "organization:org-1"
     relation: org
@@ -108,6 +120,8 @@ tests:
           can_view_workloads: true
           can_view_volumes: true
           can_create_thread: true
+          can_create_sandbox: true
+          can_list_sandboxes: true
   - name: org member has limited org permissions
     check:
       - user: "identity:org-member-id"
@@ -121,6 +135,8 @@ tests:
           can_view_workloads: false
           can_view_volumes: false
           can_create_thread: true
+          can_create_sandbox: true
+          can_list_sandboxes: false
   - name: cluster admin can add org members
     check:
       - user: "identity:admin-user-id"
@@ -130,6 +146,8 @@ tests:
           can_view_threads: true
           can_view_workloads: true
           can_view_volumes: true
+          can_create_sandbox: false
+          can_list_sandboxes: false
   - name: non-admin cannot add org members
     check:
       - user: "identity:org-owner-id"
@@ -212,6 +230,56 @@ tests:
         object: "workload:workload-1"
         assertions:
           can_view: false
+  - name: sandbox owner can connect stop and delete own sandbox
+    check:
+      - user: "identity:sandbox-owner-id"
+        object: "sandbox:sandbox-1"
+        assertions:
+          owner: true
+          can_connect: true
+          can_stop: true
+          can_delete: true
+          can_list_all: false
+  - name: org owner can manage but not connect to non-owned sandbox
+    check:
+      - user: "identity:org-owner-id"
+        object: "sandbox:sandbox-1"
+        assertions:
+          owner: false
+          can_connect: false
+          can_stop: true
+          can_delete: true
+          can_list_all: true
+  - name: org member cannot access another member sandbox
+    check:
+      - user: "identity:org-member-id"
+        object: "sandbox:sandbox-1"
+        assertions:
+          owner: false
+          can_connect: false
+          can_stop: false
+          can_delete: false
+          can_list_all: false
+  - name: org owner can connect only to own sandbox
+    check:
+      - user: "identity:org-owner-id"
+        object: "sandbox:org-owner-owned-sandbox"
+        assertions:
+          owner: true
+          can_connect: true
+          can_stop: true
+          can_delete: true
+          can_list_all: true
+  - name: unrelated identity cannot access sandbox
+    check:
+      - user: "identity:agent-role-non-member-id"
+        object: "sandbox:sandbox-1"
+        assertions:
+          owner: false
+          can_connect: false
+          can_stop: false
+          can_delete: false
+          can_list_all: false
   - name: model permissions derive from org roles
     check:
       - user: "identity:org-owner-id"
