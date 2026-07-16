@@ -22,6 +22,9 @@ tuples:
   - user: "identity:app-installed-id"
     relation: participant_add
     object: "organization:org-1"
+  - user: "identity:app-installed-id"
+    relation: inbox_write
+    object: "organization:org-1"
   - user: "organization:org-1"
     relation: org
     object: "thread:thread-1"
@@ -94,6 +97,30 @@ tuples:
   - user: "group:agent-participants#member"
     relation: participant
     object: "agent:private-agent"
+  - user: "agent:private-agent"
+    relation: class
+    object: "agent_instance:private-instance"
+  - user: "organization:org-1"
+    relation: org
+    object: "agent_instance:private-instance"
+  - user: "agent:internal-agent"
+    relation: class
+    object: "agent_instance:internal-instance"
+  - user: "organization:org-1"
+    relation: org
+    object: "agent_instance:internal-instance"
+  - user: "identity:direct-inbox-writer-id"
+    relation: can_write_inbox
+    object: "agent_instance:private-instance"
+  - user: "organization:org-1"
+    relation: org
+    object: "group:inbox-writers"
+  - user: "identity:inbox-writer-group-member-id"
+    relation: member
+    object: "group:inbox-writers"
+  - user: "group:inbox-writers#member"
+    relation: can_write_inbox
+    object: "agent_instance:private-instance"
 tests:
   - name: cluster admin can admin cluster
     check:
@@ -162,6 +189,7 @@ tests:
           thread_create: true
           thread_write: true
           participant_add: true
+          inbox_write: true
           can_create_thread: true
   - name: uninstalled app lacks org app permissions
     check:
@@ -171,6 +199,7 @@ tests:
           thread_create: false
           thread_write: false
           participant_add: false
+          inbox_write: false
           can_create_thread: false
   - name: thread participant can read write add
     check:
@@ -370,6 +399,56 @@ tests:
           can_edit_config: true
           can_manage_roles: true
           can_delete: true
+  - name: agent instance permissions derive from class and inbox grants
+    check:
+      - user: "identity:agent-participant-id"
+        object: "agent_instance:private-instance"
+        assertions:
+          can_initiate: true
+          can_manage: false
+          can_write_inbox: false
+      - user: "identity:agent-owner-id"
+        object: "agent_instance:private-instance"
+        assertions:
+          can_initiate: true
+          can_manage: true
+          can_write_inbox: false
+      - user: "identity:org-owner-id"
+        object: "agent_instance:private-instance"
+        assertions:
+          can_initiate: true
+          can_manage: true
+          can_write_inbox: false
+      - user: "identity:org-member-id"
+        object: "agent_instance:internal-instance"
+        assertions:
+          can_initiate: true
+          can_manage: false
+          can_write_inbox: false
+      - user: "identity:app-installed-id"
+        object: "agent_instance:private-instance"
+        assertions:
+          can_initiate: false
+          can_manage: false
+          can_write_inbox: true
+      - user: "identity:direct-inbox-writer-id"
+        object: "agent_instance:private-instance"
+        assertions:
+          can_initiate: false
+          can_manage: false
+          can_write_inbox: true
+      - user: "identity:inbox-writer-group-member-id"
+        object: "agent_instance:private-instance"
+        assertions:
+          can_initiate: false
+          can_manage: false
+          can_write_inbox: true
+      - user: "identity:agent-role-non-member-id"
+        object: "agent_instance:private-instance"
+        assertions:
+          can_initiate: false
+          can_manage: false
+          can_write_inbox: false
   - name: group permissions derive from membership and org roles
     check:
       - user: "identity:group-member-id"
