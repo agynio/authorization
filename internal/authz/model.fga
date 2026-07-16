@@ -24,6 +24,7 @@ type organization
     define thread_create: [identity]
     define thread_write: [identity]
     define participant_add: [identity]
+    define inbox_write: [identity]
 
 type group
   relations
@@ -45,6 +46,14 @@ type agent
     define can_edit_config: maintainer or owner or owner from org
     define can_manage_roles: owner or owner from org
     define can_delete: owner or owner from org
+
+type agent_instance
+  relations
+    define class: [agent]
+    define org: [organization]
+    define can_initiate: can_initiate from class
+    define can_manage: can_delete from class
+    define can_write_inbox: [identity, group#member] or inbox_write from org
 
 type thread
   relations
