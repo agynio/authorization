@@ -2,7 +2,7 @@ version: v2beta1
 
 vars:
   AUTHORIZATION_NAMESPACE: platform
-  AUTHORIZATION_SELECTOR: app.kubernetes.io/name=authorization,app.kubernetes.io/instance=authorization
+  AUTHORIZATION_SELECTOR: app.kubernetes.io/name=authorization
 
 functions:
   disable_argocd_sync: |-
@@ -153,7 +153,6 @@ dev:
     namespace: ${AUTHORIZATION_NAMESPACE}
     labelSelector:
       app.kubernetes.io/name: authorization
-      app.kubernetes.io/instance: authorization
     containers:
       authorization:
         container: authorization
@@ -201,5 +200,3 @@ dev:
         logs:
           enabled: true
           lastLines: 200
-    ports:
-      - port: "50051"
