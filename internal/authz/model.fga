@@ -11,7 +11,10 @@ type organization
   relations
     define cluster: [cluster]
     define member: [identity] or owner
-    define owner: [identity]
+    # A cluster admin holds owner-level access to every organization, so it is
+    # an owner here rather than a list of separately granted permissions that
+    # each new operation has to remember to extend.
+    define owner: [identity] or admin from cluster
     define can_invite: owner
     define can_manage_members: owner
     define can_view_threads: owner or admin from cluster

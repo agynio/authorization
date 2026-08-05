@@ -1,0 +1,18 @@
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-07-27T01:23:44+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-07-27T01:23:49+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-07-27T01:37:09+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-07-27T01:37:17+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-07-27T01:40:14+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-07-27T01:40:20+02:00"}
+{"level":"error","msg":"Runtime error occurred: write tcp 127.0.0.1:60671-\u003e127.0.0.1:6445: write: broken pipe","time":"2026-07-28T23:45:34+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-08-01T00:24:25+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-08-01T00:24:32+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-08-01T00:25:51+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-08-01T00:26:05+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-08-01T00:27:27+02:00"}
+{"level":"error","msg":"Runtime error occurred: EOF","time":"2026-08-01T00:27:38+02:00"}
+{"level":"error","msg":"Runtime error occurred: io: read/write on closed pipe","time":"2026-08-01T00:28:10+02:00"}
+{"level":"error","msg":"Runtime error occurred: io: read/write on closed pipe","time":"2026-08-01T00:28:28+02:00"}
+{"level":"error","msg":"Runtime error occurred: io: read/write on closed pipe","time":"2026-08-01T00:29:52+02:00"}
+{"level":"error","msg":"Runtime error occurred: io: read/write on closed pipe","time":"2026-08-01T00:31:23+02:00"}
+{"level":"error","msg":"Runtime error occurred: write tcp 127.0.0.1:53833-\u003e127.0.0.1:6445: write: broken pipe","time":"2026-08-01T01:01:49+02:00"}
