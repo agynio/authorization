@@ -20,6 +20,7 @@ type organization
     define can_add_member: admin from cluster
     define can_create_thread: member or thread_create
     define can_create_sandbox: member
+    define can_create_environment: member
     define can_list_sandboxes: owner or admin from cluster
     define thread_create: [identity]
     define thread_write: [identity]
@@ -68,6 +69,19 @@ type workload
     define org: [organization]
     define owner_agent: [identity]
     define can_view: owner_agent or can_view_workloads from org
+
+type environment
+  relations
+    define org: [organization]
+    define owner: [identity, group#member]
+    define maintainer: [identity, group#member]
+    define user: [identity, group#member]
+    define internal_access: [organization]
+    define can_use: owner or maintainer or user or member from internal_access
+    define can_read_config: owner or maintainer or owner from org
+    define can_edit_config: owner or maintainer or owner from org
+    define can_manage_roles: owner or owner from org
+    define can_delete: owner or owner from org
 
 type sandbox
   relations

@@ -121,6 +121,24 @@ tuples:
   - user: "group:inbox-writers#member"
     relation: can_write_inbox
     object: "agent_instance:private-instance"
+  - user: "organization:org-1"
+    relation: org
+    object: "environment:internal-environment"
+  - user: "organization:org-1"
+    relation: internal_access
+    object: "environment:internal-environment"
+  - user: "organization:org-1"
+    relation: org
+    object: "environment:private-environment"
+  - user: "identity:environment-owner-id"
+    relation: owner
+    object: "environment:private-environment"
+  - user: "identity:environment-maintainer-id"
+    relation: maintainer
+    object: "environment:private-environment"
+  - user: "identity:environment-user-id"
+    relation: user
+    object: "environment:private-environment"
 tests:
   - name: cluster admin can admin cluster
     check:
@@ -489,6 +507,69 @@ tests:
         assertions:
           owner: false
           can_initiate: true
+          can_read_config: true
+          can_edit_config: true
+          can_manage_roles: true
+          can_delete: true
+  - name: any organization member may author an environment
+    check:
+      - user: "identity:org-member-id"
+        object: "organization:org-1"
+        assertions:
+          can_create_environment: true
+      - user: "identity:org-owner-id"
+        object: "organization:org-1"
+        assertions:
+          can_create_environment: true
+      - user: "identity:agent-role-non-member-id"
+        object: "organization:org-1"
+        assertions:
+          can_create_environment: false
+  - name: an internal environment may be used by any organization member
+    check:
+      - user: "identity:org-member-id"
+        object: "environment:internal-environment"
+        assertions:
+          can_use: true
+          can_read_config: false
+          can_edit_config: false
+  - name: a private environment reaches only its role holders
+    check:
+      - user: "identity:org-member-id"
+        object: "environment:private-environment"
+        assertions:
+          can_use: false
+          can_read_config: false
+      - user: "identity:environment-user-id"
+        object: "environment:private-environment"
+        assertions:
+          can_use: true
+          can_read_config: false
+          can_edit_config: false
+          can_manage_roles: false
+          can_delete: false
+      - user: "identity:environment-maintainer-id"
+        object: "environment:private-environment"
+        assertions:
+          can_use: true
+          can_read_config: true
+          can_edit_config: true
+          can_manage_roles: false
+          can_delete: false
+      - user: "identity:environment-owner-id"
+        object: "environment:private-environment"
+        assertions:
+          can_use: true
+          can_read_config: true
+          can_edit_config: true
+          can_manage_roles: true
+          can_delete: true
+  - name: org owner retains administrative access to every environment
+    check:
+      - user: "identity:org-owner-id"
+        object: "environment:private-environment"
+        assertions:
+          owner: false
           can_read_config: true
           can_edit_config: true
           can_manage_roles: true
