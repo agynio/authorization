@@ -139,6 +139,12 @@ tuples:
   - user: "identity:environment-user-id"
     relation: user
     object: "environment:private-environment"
+  - user: "identity:private-instance"
+    relation: instance
+    object: "agent:private-agent"
+  - user: "agent:private-agent"
+    relation: agent
+    object: "environment:private-environment"
 tests:
   - name: cluster admin can admin cluster
     check:
@@ -564,6 +570,37 @@ tests:
           can_edit_config: true
           can_manage_roles: true
           can_delete: true
+  - name: a running instance reads the config it was started from
+    check:
+      - user: "identity:private-instance"
+        object: "agent:private-agent"
+        assertions:
+          can_read_config: true
+          can_edit_config: false
+          can_initiate: false
+          can_manage_roles: false
+          can_delete: false
+      - user: "identity:private-instance"
+        object: "environment:private-environment"
+        assertions:
+          can_read_config: true
+          can_use: false
+          can_edit_config: false
+          can_manage_roles: false
+          can_delete: false
+      # The grant follows the instance's own agent, not every agent it can see.
+      - user: "identity:private-instance"
+        object: "agent:internal-agent"
+        assertions:
+          can_read_config: false
+      - user: "identity:private-instance"
+        object: "environment:internal-environment"
+        assertions:
+          can_read_config: false
+      - user: "identity:internal-instance"
+        object: "environment:private-environment"
+        assertions:
+          can_read_config: false
   - name: org owner retains administrative access to every environment
     check:
       - user: "identity:org-owner-id"
