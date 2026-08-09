@@ -438,6 +438,28 @@ func checkErrorMessage(err openfga.CheckError) string {
 	return "check failed"
 }
 
+// alreadyConvergedCode reports the code for a write OpenFGA refused because the
+// store already says what the caller asked it to say. Both arrive as the same
+// validation code, so the message is the only thing that separates them.
+//
+// InvalidArgument reads as "the caller is wrong" and callers treat it as
+// permanent, but writing a tuple that exists is the desired state already
+// holding -- a grant that has to survive being repeated cannot be expressed
+// otherwise.
+func alreadyConvergedCode(code openfga.ErrorCode, message string) codes.Code {
+	if code != openfga.ERRORCODE_WRITE_FAILED_DUE_TO_INVALID_INPUT {
+		return codes.OK
+	}
+	switch {
+	case strings.Contains(message, "cannot write a tuple which already exists"):
+		return codes.AlreadyExists
+	case strings.Contains(message, "cannot delete a tuple which does not exist"):
+		return codes.NotFound
+	default:
+		return codes.OK
+	}
+}
+
 func toStatusError(err error) error {
 	var requiredErr openfgaclient.FgaRequiredParamError
 	if errors.As(err, &requiredErr) {
@@ -453,6 +475,9 @@ func toStatusError(err error) error {
 	}
 	var validationErr openfga.FgaApiValidationError
 	if errors.As(err, &validationErr) {
+		if code := alreadyConvergedCode(validationErr.ResponseCode(), validationErr.Error()); code != codes.OK {
+			return status.Error(code, validationErr.Error())
+		}
 		return status.Error(codes.InvalidArgument, validationErr.Error())
 	}
 	var notFoundErr openfga.FgaApiNotFoundError

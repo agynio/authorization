@@ -1,0 +1,71 @@
+{"level":"info","msg":"Inject devspacehelper...","time":"2026-08-07T17:51:28+02:00"}
+{"level":"info","msg":"Successfully injected devspacehelper into pod platform/authorization-6d9b85fd46-gtwgx","time":"2026-08-07T17:51:30+02:00"}
+{"level":"info","msg":"Start syncing","time":"2026-08-07T17:51:30+02:00"}
+{"level":"info","msg":"Downstream - Initial sync completed","time":"2026-08-07T17:51:30+02:00"}
+{"level":"info","msg":"Upstream - Upload 30 create change(s) (Uncompressed ~126.07 KB)","time":"2026-08-07T17:51:31+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 30 change(s)","time":"2026-08-07T17:51:31+02:00"}
+{"level":"info","msg":"Upstream - Initial sync completed","time":"2026-08-07T17:51:32+02:00"}
+{"level":"info","msg":"Inject devspacehelper...","time":"2026-08-07T17:54:07+02:00"}
+{"level":"info","msg":"Successfully injected devspacehelper into pod platform/authorization-9977bd4c8-nz7xn","time":"2026-08-07T17:54:09+02:00"}
+{"level":"info","msg":"Start syncing","time":"2026-08-07T17:54:09+02:00"}
+{"level":"info","msg":"Downstream - Initial sync completed","time":"2026-08-07T17:54:09+02:00"}
+{"level":"info","msg":"Upstream - Upload 30 create change(s) (Uncompressed ~126.07 KB)","time":"2026-08-07T17:54:10+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 30 change(s)","time":"2026-08-07T17:54:10+02:00"}
+{"level":"info","msg":"Upstream - Initial sync completed","time":"2026-08-07T17:54:11+02:00"}
+{"level":"info","msg":"Inject devspacehelper...","time":"2026-08-07T23:21:37+02:00"}
+{"level":"info","msg":"Successfully injected devspacehelper into pod platform/authorization-85ddbd6fb9-9lwfl","time":"2026-08-07T23:21:39+02:00"}
+{"level":"info","msg":"Start syncing","time":"2026-08-07T23:21:39+02:00"}
+{"level":"info","msg":"Downstream - Initial sync completed","time":"2026-08-07T23:21:39+02:00"}
+{"level":"info","msg":"Upstream - Upload 30 create change(s) (Uncompressed ~126.07 KB)","time":"2026-08-07T23:21:40+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 30 change(s)","time":"2026-08-07T23:21:40+02:00"}
+{"level":"info","msg":"Upstream - Initial sync completed","time":"2026-08-07T23:21:41+02:00"}
+{"level":"info","msg":"Inject devspacehelper...","time":"2026-08-09T05:26:22+02:00"}
+{"level":"info","msg":"Successfully injected devspacehelper into pod platform/authorization-6d9b85fd46-dpjhg","time":"2026-08-09T05:26:24+02:00"}
+{"level":"info","msg":"Start syncing","time":"2026-08-09T05:26:24+02:00"}
+{"level":"info","msg":"Downstream - Initial sync completed","time":"2026-08-09T05:26:24+02:00"}
+{"level":"info","msg":"Upstream - Upload 30 create change(s) (Uncompressed ~127.66 KB)","time":"2026-08-09T05:26:25+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 30 change(s)","time":"2026-08-09T05:26:25+02:00"}
+{"level":"info","msg":"Upstream - Initial sync completed","time":"2026-08-09T05:26:26+02:00"}
+{"level":"error","msg":"Sync Error on /Users/vitaliivalkov/agyn/authorization: Downstream Sync - connection lost to pod platform/authorization-6d9b85fd46-dpjhg: Use inotify as watching method in container\n command terminated with exit code 137","time":"2026-08-09T05:29:33+02:00"}
+{"level":"info","msg":"Inject devspacehelper...","time":"2026-08-09T05:29:34+02:00"}
+{"level":"info","msg":"Successfully injected devspacehelper into pod platform/authorization-676d644778-gvlrl","time":"2026-08-09T05:29:35+02:00"}
+{"level":"info","msg":"Start syncing","time":"2026-08-09T05:29:35+02:00"}
+{"level":"info","msg":"Downstream - Initial sync completed","time":"2026-08-09T05:29:35+02:00"}
+{"level":"info","msg":"Upstream - Upload 30 create change(s) (Uncompressed ~127.66 KB)","time":"2026-08-09T05:29:36+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 30 change(s)","time":"2026-08-09T05:29:36+02:00"}
+{"level":"info","msg":"Upstream - Initial sync completed","time":"2026-08-09T05:29:38+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'internal/authz/model.fga.yaml'","time":"2026-08-09T06:02:54+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'internal/authz/model.fga'","time":"2026-08-09T06:02:54+02:00"}
+{"level":"info","msg":"Upstream - Upload 2 create change(s) (Uncompressed ~20.99 KB)","time":"2026-08-09T06:02:54+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 2 change(s)","time":"2026-08-09T06:02:54+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'internal/authz/model.fga'","time":"2026-08-09T06:02:56+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'internal/authz/model.fga.yaml'","time":"2026-08-09T06:02:56+02:00"}
+{"level":"info","msg":"Upstream - Upload 2 create change(s) (Uncompressed ~22.58 KB)","time":"2026-08-09T06:02:56+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 2 change(s)","time":"2026-08-09T06:02:56+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'charts/authorization/templates/migrate-job.yaml'","time":"2026-08-09T07:09:29+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'charts/authorization/templates/migrate-rbac.yaml'","time":"2026-08-09T07:09:29+02:00"}
+{"level":"info","msg":"Upstream - Upload 2 create change(s) (Uncompressed ~4.56 KB)","time":"2026-08-09T07:09:29+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 2 change(s)","time":"2026-08-09T07:09:29+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'charts/authorization/templates/migrate-job.yaml'","time":"2026-08-09T07:10:43+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'charts/authorization/templates/migrate-rbac.yaml'","time":"2026-08-09T07:10:43+02:00"}
+{"level":"info","msg":"Upstream - Upload 2 create change(s) (Uncompressed ~4.54 KB)","time":"2026-08-09T07:10:43+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 2 change(s)","time":"2026-08-09T07:10:43+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'charts/authorization/templates/migrate-rbac.yaml'","time":"2026-08-09T07:10:45+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'charts/authorization/templates/migrate-job.yaml'","time":"2026-08-09T07:10:45+02:00"}
+{"level":"info","msg":"Upstream - Upload 2 create change(s) (Uncompressed ~4.56 KB)","time":"2026-08-09T07:10:45+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 2 change(s)","time":"2026-08-09T07:10:45+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'internal/server/server.go'","time":"2026-08-09T15:13:47+02:00"}
+{"level":"info","msg":"Upstream - Upload 1 create change(s) (Uncompressed ~14.51 KB)","time":"2026-08-09T15:13:47+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 1 change(s)","time":"2026-08-09T15:13:47+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'internal/server/server.go'","time":"2026-08-09T15:13:55+02:00"}
+{"level":"info","msg":"Upstream - Upload 1 create change(s) (Uncompressed ~15.42 KB)","time":"2026-08-09T15:13:55+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 1 change(s)","time":"2026-08-09T15:13:55+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'internal/server/server.go'","time":"2026-08-09T15:15:32+02:00"}
+{"level":"info","msg":"Upstream - Upload 1 create change(s) (Uncompressed ~15.39 KB)","time":"2026-08-09T15:15:32+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 1 change(s)","time":"2026-08-09T15:15:32+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'internal/server/server.go'","time":"2026-08-09T15:15:39+02:00"}
+{"level":"info","msg":"Upstream - Upload 1 create change(s) (Uncompressed ~15.43 KB)","time":"2026-08-09T15:15:39+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 1 change(s)","time":"2026-08-09T15:15:39+02:00"}
+{"level":"info","msg":"Upstream - Upload File 'internal/server/already_converged_test.go'","time":"2026-08-09T15:15:53+02:00"}
+{"level":"info","msg":"Upstream - Upload 1 create change(s) (Uncompressed ~2.17 KB)","time":"2026-08-09T15:15:53+02:00"}
+{"level":"info","msg":"Upstream - Successfully processed 1 change(s)","time":"2026-08-09T15:15:53+02:00"}
