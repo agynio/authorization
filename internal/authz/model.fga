@@ -42,8 +42,11 @@ type agent
     define owner: [identity, group#member]
     define maintainer: [identity, group#member]
     define participant: [identity, group#member]
+    # The identity a running instance authenticates as, so it can read the
+    # config it was started from.
+    define instance: [identity]
     define can_initiate: participant or maintainer or owner or owner from org or member from internal_access
-    define can_read_config: maintainer or owner or owner from org
+    define can_read_config: maintainer or owner or owner from org or instance
     define can_edit_config: maintainer or owner or owner from org
     define can_manage_roles: owner or owner from org
     define can_delete: owner or owner from org
@@ -77,8 +80,11 @@ type environment
     define maintainer: [identity, group#member]
     define user: [identity, group#member]
     define internal_access: [organization]
+    # The agents this environment supplies, whose running instances read the
+    # init scripts and servers a workload here carries.
+    define agent: [agent]
     define can_use: owner or maintainer or user or member from internal_access
-    define can_read_config: owner or maintainer or owner from org
+    define can_read_config: owner or maintainer or owner from org or instance from agent
     define can_edit_config: owner or maintainer or owner from org
     define can_manage_roles: owner or owner from org
     define can_delete: owner or owner from org
