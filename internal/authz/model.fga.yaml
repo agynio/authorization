@@ -293,6 +293,7 @@ tests:
           can_stop: true
           can_delete: true
           can_list_all: false
+          can_read: true
   - name: org owner can manage but not connect to non-owned sandbox
     check:
       - user: "identity:org-owner-id"
@@ -303,6 +304,7 @@ tests:
           can_stop: true
           can_delete: true
           can_list_all: true
+          can_read: true
   - name: org member cannot access another member sandbox
     check:
       - user: "identity:org-member-id"
@@ -313,6 +315,7 @@ tests:
           can_stop: false
           can_delete: false
           can_list_all: false
+          can_read: false
   - name: org owner can connect only to own sandbox
     check:
       - user: "identity:org-owner-id"
@@ -323,6 +326,7 @@ tests:
           can_stop: true
           can_delete: true
           can_list_all: true
+          can_read: true
   - name: unrelated identity cannot access sandbox
     check:
       - user: "identity:agent-role-non-member-id"
@@ -333,6 +337,7 @@ tests:
           can_stop: false
           can_delete: false
           can_list_all: false
+          can_read: false
   - name: model permissions derive from org roles
     check:
       - user: "identity:org-owner-id"

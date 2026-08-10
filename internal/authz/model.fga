@@ -97,6 +97,10 @@ type sandbox
     define can_stop: owner or owner from org
     define can_delete: owner or owner from org
     define can_list_all: owner from org
+    # Gates the sandbox:{id} notification room, so whoever may read the record
+    # may watch it change. GetSandbox admits exactly these two; a collaborator
+    # joins them when sharing lands, and the room widens with it.
+    define can_read: owner or owner from org
 
 type model
   relations
