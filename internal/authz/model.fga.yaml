@@ -188,17 +188,18 @@ tests:
           can_create_thread: true
           can_create_sandbox: true
           can_list_sandboxes: false
-  - name: cluster admin can add org members
+  - name: cluster admin can add and manage org members
     check:
       - user: "identity:admin-user-id"
         object: "organization:org-1"
         assertions:
           can_add_member: true
+          can_manage_members: true
           can_view_threads: true
           can_view_workloads: true
           can_view_volumes: true
           can_create_sandbox: false
-          can_list_sandboxes: false
+          can_list_sandboxes: true
   - name: non-admin cannot add org members
     check:
       - user: "identity:org-owner-id"
