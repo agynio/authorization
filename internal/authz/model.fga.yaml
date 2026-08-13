@@ -145,6 +145,12 @@ tuples:
   - user: "agent:private-agent"
     relation: agent
     object: "environment:private-environment"
+  - user: "identity:sandbox-1"
+    relation: holder
+    object: "sandbox:sandbox-1"
+  - user: "sandbox:sandbox-1"
+    relation: sandbox
+    object: "environment:private-environment"
 tests:
   - name: cluster admin can admin cluster
     check:
@@ -604,6 +610,31 @@ tests:
         assertions:
           can_read_config: false
       - user: "identity:internal-instance"
+        object: "environment:private-environment"
+        assertions:
+          can_read_config: false
+  - name: a sandbox holder reads its own environment config and nothing more
+    check:
+      - user: "identity:sandbox-1"
+        object: "environment:private-environment"
+        assertions:
+          can_read_config: true
+          can_use: false
+          can_edit_config: false
+          can_manage_roles: false
+          can_delete: false
+      # The grant follows the sandbox's own environment, not every one it sees.
+      - user: "identity:sandbox-1"
+        object: "environment:internal-environment"
+        assertions:
+          can_read_config: false
+      # Holding is not owning: the workload reads config, the person connects.
+      - user: "identity:sandbox-1"
+        object: "sandbox:sandbox-1"
+        assertions:
+          can_connect: false
+          can_delete: false
+      - user: "identity:sandbox-owner-id"
         object: "environment:private-environment"
         assertions:
           can_read_config: false
