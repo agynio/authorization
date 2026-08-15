@@ -1,7 +1,7 @@
 version: v2beta1
 
 vars:
-  AUTHORIZATION_NAMESPACE: platform
+  AUTHORIZATION_NAMESPACE: agyn-platform
   AUTHORIZATION_SELECTOR: app.kubernetes.io/name=authorization
 
 functions:
