@@ -173,6 +173,7 @@ tests:
           member: true
           can_invite: true
           can_manage_members: true
+          can_manage_organization: true
           can_view_threads: true
           can_view_workloads: true
           can_view_volumes: true
@@ -188,6 +189,7 @@ tests:
           member: true
           can_invite: false
           can_manage_members: false
+          can_manage_organization: false
           can_view_threads: false
           can_view_workloads: false
           can_view_volumes: false
@@ -201,6 +203,7 @@ tests:
         assertions:
           can_add_member: true
           can_manage_members: true
+          can_manage_organization: true
           can_view_threads: true
           can_view_workloads: true
           can_view_volumes: true

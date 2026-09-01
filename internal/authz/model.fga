@@ -14,6 +14,7 @@ type organization
     define owner: [identity]
     define can_invite: owner
     define can_manage_members: owner or admin from cluster
+    define can_manage_organization: owner or admin from cluster
     define can_view_threads: owner or admin from cluster
     define can_view_workloads: owner or admin from cluster
     define can_view_volumes: owner or admin from cluster
